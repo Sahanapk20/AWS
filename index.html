@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>To-Do List</title>
+
+<style>
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+}
+
+body{
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container{
+    width: 350px;
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.container h2{
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.input-box{
+    display: flex;
+    gap: 10px;
+}
+
+input{
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+button{
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: none;
+    background: #667eea;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover{
+    background: #5a67d8;
+}
+
+ul{
+    list-style: none;
+    margin-top: 20px;
+}
+
+li{
+    background: #f5f6fa;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: fadeIn 0.4s ease;
+}
+
+li.completed{
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+li span{
+    cursor: pointer;
+}
+
+li button{
+    background: #e74c3c;
+    padding: 5px 10px;
+}
+
+li button:hover{
+    background: #c0392b;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to{
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>📝 My To-Do List</h2>
+
+    <div class="input-box">
+        <input type="text" id="taskInput" placeholder="Add a new task">
+        <button onclick="addTask()">Add</button>
+    </div>
+
+    <ul id="taskList"></ul>
+</div>
+
+<script>
+function addTask(){
+    const input = document.getElementById("taskInput");
+    const taskText = input.value.trim();
+
+    if(taskText === ""){
+        alert("Please enter a task!");
+        return;
+    }
+
+    const li = document.createElement("li");
+
+    const span = document.createElement("span");
+    span.innerText = taskText;
+    span.onclick = () => li.classList.toggle("completed");
+
+    const delBtn = document.createElement("button");
+    delBtn.innerText = "Delete";
+    delBtn.onclick = () => li.remove();
+
+    li.appendChild(span);
+    li.appendChild(delBtn);
+
+    document.getElementById("taskList").appendChild(li);
+
+    input.value = "";
+}
+</script>
+
+</body>
+</html>
