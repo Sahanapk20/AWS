@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beautiful To-Do List</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",sans-serif;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#667eea,#764ba2);
+}
+
+/* Glass Card */
+.container{
+    width:380px;
+    padding:25px;
+    border-radius:20px;
+    backdrop-filter:blur(15px);
+    background:rgba(255,255,255,0.15);
+    border:1px solid rgba(255,255,255,0.2);
+    box-shadow:0 25px 50px rgba(0,0,0,0.25);
+    color:white;
+}
+
+h2{
+    text-align:center;
+    margin-bottom:15px;
+}
+
+/* Input */
+.input-box{
+    display:flex;
+    gap:10px;
+}
+
+input{
+    flex:1;
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    outline:none;
+}
+
+/* Buttons */
+button{
+    border:none;
+    border-radius:10px;
+    padding:10px 15px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+.add-btn{
+    background:#00c9a7;
+    color:white;
+}
+
+.add-btn:hover{
+    transform:scale(1.05);
+    background:#00b394;
+}
+
+/* List */
+ul{
+    list-style:none;
+    margin-top:20px;
+    max-height:250px;
+    overflow-y:auto;
+}
+
+li{
+    background:rgba(255,255,255,0.9);
+    color:#333;
+    padding:10px 12px;
+    border-radius:12px;
+    margin-bottom:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    animation:fadeIn 0.3s ease;
+}
+
+li:hover{
+    transform:translateX(3px);
+}
+
+/* Completed */
+.completed{
+    text-decoration:line-through;
+    opacity:0.6;
+}
+
+/* Delete button */
+.delete{
+    background:#ff4d4d;
+    color:white;
+    padding:5px 10px;
+    border-radius:8px;
+}
+
+.delete:hover{
+    background:#e60000;
+}
+
+/* Footer */
+.footer{
+    display:flex;
+    justify-content:space-between;
+    margin-top:10px;
+    font-size:14px;
+}
+
+.clear-btn{
+    background:transparent;
+    color:white;
+    border:1px solid white;
+    padding:5px 10px;
+}
+
+.clear-btn:hover{
+    background:white;
+    color:#333;
+}
+
+/* Animation */
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>📝 My To-Do List</h2>
+
+    <div class="input-box">
+        <input type="text" id="taskInput" placeholder="Add a task...">
+        <button class="add-btn" onclick="addTask()">Add</button>
+    </div>
+
+    <ul id="taskList"></ul>
+
+    <div class="footer">
+        <span id="count">0 tasks</span>
+        <button class="clear-btn" onclick="clearAll()">Clear All</button>
+    </div>
+</div>
+
+<script>
+const input = document.getElementById("taskInput");
+const list = document.getElementById("taskList");
+const count = document.getElementById("count");
+
+/* Load saved tasks */
+window.onload = () => {
+    const saved = JSON.parse(localStorage.getItem("tasks")) || [];
+    saved.forEach(t => createTask(t.text, t.completed));
+    updateCount();
+};
+
+/* Add task */
+function addTask(){
+    const text = input.value.trim();
+    if(text === "") return alert("Enter a task!");
+
+    createTask(text,false);
+    saveTasks();
+    updateCount();
+    input.value = "";
+}
+
+/* Create task element */
+function createTask(text,completed){
+    const li = document.createElement("li");
+    if(completed) li.classList.add("completed");
+
+    const span = document.createElement("span");
+    span.innerText = text;
+    span.onclick = () => {
+        li.classList.toggle("completed");
+        saveTasks();
+    };
+
+    const del = document.createElement("button");
+    del.innerText = "Delete";
+    del.className = "delete";
+    del.onclick = () => {
+        li.remove();
+        saveTasks();
+        updateCount();
+    };
+
+    li.append(span,del);
+    list.appendChild(li);
+}
+
+/* Save tasks */
+function saveTasks(){
+    const tasks = [];
+    document.querySelectorAll("#taskList li").forEach(li=>{
+        tasks.push({
+            text: li.querySelector("span").innerText,
+            completed: li.classList.contains("completed")
+        });
+    });
+    localStorage.setItem("tasks",JSON.stringify(tasks));
+}
+
+/* Count */
+function updateCount(){
+    count.innerText = list.children.length + " tasks";
+}
+
+/* Clear all */
+function clearAll(){
+    if(confirm("Delete all tasks?")){
+        list.innerHTML = "";
+        saveTasks();
+        updateCount();
+    }
+}
+
+/* Enter key */
+input.addEventListener("keypress",e=>{
+    if(e.key==="Enter") addTask();
+});
+</script>
+
+</body>
+</html>
